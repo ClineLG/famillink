@@ -15,12 +15,15 @@ mongoose.connect(process.env.MONGODB_URI);
 
 app.use(express.json());
 
-const Message = require("./models/Message");
+const Message = require("./Models/Message");
 
-//Routes Familly to add
+//Routes Family to add
 //Routes User to add
-
+const userRoutes = require("./routes/user");
+app.use(userRoutes);
 //instant messages config//
+const famillyRoutes = require("./routes/familly");
+app.use(famillyRoutes);
 
 io.on("connection", (socket) => {
   console.log("un utilisateur est connecté" + socket.id);
@@ -34,7 +37,7 @@ io.on("connection", (socket) => {
         );
       } catch (error) {
         console.log(error);
-        socket.emit("error Cannot do that for now");
+        socket.emit("error", "Cannot do that for now");
       }
     });
 
@@ -49,11 +52,11 @@ io.on("connection", (socket) => {
           date: new Date(),
         });
 
-        newMessage.save();
+        await newMessage.save();
         io.to(MsgData.familyCode).emit("receiveMessage", MsgData);
       } catch (error) {
         console.log(error);
-        socket.emit("error, cannot do that for now");
+        socket.emit("error", "cannot do that for now");
       }
     });
 
